@@ -2,7 +2,7 @@
 set -e
 
 # Cloud Search Linux Installer
-# Author: mailinglistenator
+# Author: kylechoidev
 # License: MIT
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

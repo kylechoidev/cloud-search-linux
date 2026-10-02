@@ -133,7 +133,15 @@ def handle_cli():
     p_browse.add_argument("remote", choices=["onedrive", "gdrive"], help="Remote to browse")
     p_browse.add_argument("path", nargs="?", default="", help="Folder path (optional, default root)")
 
+    # mcp
+    subparsers.add_parser("mcp", help="Run Model Context Protocol (MCP) JSON-RPC server")
+
     args = parser.parse_args()
+
+    if args.command == "mcp":
+        from mcp_server import run_stdio_server
+        run_stdio_server()
+        return
 
     ensure_backend_running()
 

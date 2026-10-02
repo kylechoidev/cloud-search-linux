@@ -78,7 +78,7 @@ If you mount cloud storage on Linux using FUSE (`rclone mount`, `google-drive-oc
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/mailinglistenator/cloud-search-linux.git
+git clone https://github.com/kylechoidev/cloud-search-linux.git
 cd cloud-search-linux
 
 # 2. Run the installer
@@ -143,6 +143,9 @@ cloud-search-lite search "contract" --remote gdrive
 # Trigger a background metadata re-sync:
 cloud-search-lite sync
 cloud-search-lite sync --remote onedrive
+
+# Launch Model Context Protocol (MCP) JSON-RPC 2.0 server (for AI agents/Antigravity):
+cloud-search-lite mcp
 ```
 
 ---
@@ -189,4 +192,4 @@ To remove the desktop launcher and executable wrapper:
 
 Distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
 
-Developed with ❤️ by [mailinglistenator](https://github.com/mailinglistenator).
+Developed with ❤️ by [kylechoidev](https://github.com/kylechoidev).

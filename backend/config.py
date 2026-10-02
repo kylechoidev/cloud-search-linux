@@ -18,6 +18,11 @@ USER_DATA_DIR = CONFIG_DIR / "browser-profile"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = DATA_DIR / "index.db"
 
+# Fallback: if running from dev repo and local DB is unindexed, use the installed production DB
+INSTALLED_DB = Path.home() / ".local" / "share" / "cloud-search-lite-app" / "data" / "index.db"
+if (not DB_PATH.exists() or DB_PATH.stat().st_size < 100000) and INSTALLED_DB.exists():
+    DB_PATH = INSTALLED_DB
+
 PORT = 8799
 HOST = "127.0.0.1"
 WM_CLASS = "CloudSearchLite"
