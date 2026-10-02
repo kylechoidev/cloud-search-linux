@@ -27,7 +27,7 @@ class CloudSearchMCPServer:
     def __init__(self):
         self.server_info = {
             "name": "cloud-search-lite",
-            "version": "2.0.0",
+            "version": "3.0.0",
         }
 
     def get_tool_definitions(self) -> List[Dict[str, Any]]:

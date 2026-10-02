@@ -1,19 +1,20 @@
-# Cloud Search Linux (v2.0)
+# Cloud Search Linux (v3.0)
 
 <p align="center">
   <img src="assets/icon.svg" alt="Cloud Search Linux Icon" width="120" height="120">
 </p>
 
 <p align="center">
-  <b>Sub-millisecond local desktop search & pseudo file manager for OneDrive, Google Drive, and cloud storage on Linux.</b>
+  <b>Sub-millisecond local desktop search, pseudo file manager & AI Agent MCP provider for OneDrive, Google Drive, and cloud storage on Linux.</b>
   <br>
   <i>Zero FUSE crawling overhead. Pure Python standard library & vanilla web technology. Zero bloat.</i>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.0-blueviolet.svg" alt="v2.0">
+  <img src="https://img.shields.io/badge/Version-3.0-blueviolet.svg" alt="v3.0">
   <img src="https://img.shields.io/badge/Language-Python%203-blue.svg" alt="Python 3">
   <img src="https://img.shields.io/badge/Search-SQLite%20FTS5-green.svg" alt="SQLite FTS5">
+  <img src="https://img.shields.io/badge/AI_Agent-MCP_Enabled-purple.svg" alt="MCP Enabled">
   <img src="https://img.shields.io/badge/Backend-rclone-orange.svg" alt="rclone">
   <img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="MIT License">
 </p>
@@ -22,17 +23,19 @@
 
 ## ⚡ The Problem Cloud Search Linux Solves
 
-If you mount cloud storage on Linux using FUSE (`rclone mount`, `google-drive-ocamlfuse`, etc.), browsing and searching large hierarchies (e.g. 5 TB Google Drive, 1.1 TB OneDrive) in native file managers (**Nemo**, **Nautilus**, **Dolphin**, **Thunar**) or desktop search tools (**FSearch**, **Catfish**, **Recoll**, **Baloo**) quickly causes severe issues:
+If you mount cloud storage on Linux using FUSE (`rclone mount`, `google-drive-ocamlfuse`, etc.), browsing and searching large hierarchies (e.g. 5 TB Google Drive, 1.1 TB OneDrive) in native file managers (**Nemo**, **Nautilus**, **Dolphin**, **Thunar**), desktop search tools (**FSearch**, **Catfish**, **Recoll**, **Baloo**), or autonomous AI agents (**Google Antigravity**, **Claude**, **Cursor**) quickly causes severe issues:
 * **Blocking POSIX Directory Reads**: Opening a folder in Nemo makes synchronous HTTP calls over FUSE, freezing the desktop file manager while waiting for cloud API responses.
 * **Recursive POSIX Crawling**: Standard search tools execute recursive `opendir`/`readdir`/`stat` calls across virtual mounts.
 * **API Rate Limiting & Quotas**: Millions of stat calls trigger cloud provider HTTP 429 rate limits and API bans.
 * **Kernel & System Freezes**: Deep directory trees cause processes to get trapped in uninterruptible sleep (`request_wait_answer` D-state), locking up your file manager and hanging the system during boot.
+* **AI Agent Crawl Traps**: AI coding assistants and agent harnesses routinely try to run `find` or `grep -r` across home and cloud paths, hanging their execution loop and exhausting context tokens.
 
-**Cloud Search Linux decouples search and browsing from FUSE crawling entirely:**
+**Cloud Search Linux decouples search, browsing, and AI agent retrieval from FUSE crawling entirely:**
 1. **Metadata API Streaming**: Fetches cloud file and folder hierarchies directly via cloud metadata APIs (`rclone lsf -R --fast-list`), indexing 300,000+ items in minutes without mounting.
 2. **Local SQLite FTS5 Engine**: Every search query executes locally in **~1 ms to 35 ms** with BM25 relevance ranking and zero network traffic.
 3. **Cloud Explorer (Pseudo File Manager Mode)**: Browse your entire cloud folder hierarchy like a native file manager with **sub-millisecond queries (~0.2 ms to 1.5 ms)** powered by indexed parent paths, complete with clickable breadcrumbs, drive tabs, list & grid views, and quick filtering.
 4. **Desktop Application Bridge**: Open files with `xdg-open` or reveal items directly in your desktop file manager (**Nemo**, **Nautilus**, **Dolphin**, **Thunar**) via D-Bus / `gio`.
+5. **AI Agent Harness Bridge (Model Context Protocol)**: Exposes native MCP tools (`cloud_search`, `cloud_browse`, `cloud_status`) over zero-dependency stdio JSON-RPC 2.0. AI agents query cloud metadata in ~1 ms and receive canonical local paths without touching FUSE mounts.
 
 ---
 
@@ -58,6 +61,15 @@ If you mount cloud storage on Linux using FUSE (`rclone mount`, `google-drive-oc
   * Copy Local Path (`~/OneDrive/...`)
   * Copy Cloud Path (`onedrive:...`)
 * 💻 **CLI Folder Browser**: Browse directories directly in your terminal via `cloud-search-lite browse <remote> [path]`.
+
+### 🤖 Model Context Protocol (MCP) Mode (v3.0)
+* 🧠 **Native AI Agent Integration**: Seamlessly expose your 339,000+ indexed cloud files directly to AI agents and coding harnesses (**Google Antigravity 2.0**, **Claude Desktop**, **Cursor**, **Zed**, **LangChain**).
+* ⚡ **Zero-FUSE AI Crawl Prevention**: Prevents AI agents from running blocking, recursive `find` or `grep` sweeps over FUSE mounts. Agents query your SQLite index via stdio JSON-RPC 2.0 in **~1 ms to 20 ms**.
+* 🛠️ **Exposed MCP Tools**:
+  * `cloud_search(query, remote, file_type, limit)`: Ultra-fast FTS5 full-text search with BM25 ranking across all indexed cloud files.
+  * `cloud_browse(remote, path)`: Sub-millisecond pseudo-directory browsing at ~0.2 ms per folder without network delays.
+  * `cloud_status()`: Quick overview of indexed remotes, total items, and sync timestamps.
+* 🔌 **Zero-Dependency Stdio Server**: Implements pure JSON-RPC 2.0 using Python's standard library—zero pip packages, zero npm, instant startup.
 
 ### 🧩 Zero Bloat & Dependencies
 * Built strictly using the **Python 3 standard library** and **vanilla HTML/CSS/JavaScript**.
@@ -146,6 +158,34 @@ cloud-search-lite sync --remote onedrive
 
 # Launch Model Context Protocol (MCP) JSON-RPC 2.0 server (for AI agents/Antigravity):
 cloud-search-lite mcp
+```
+
+### 🤖 AI Agent Harness Setup (Antigravity, Claude, Cursor)
+
+To connect Cloud Search Linux to your autonomous AI coding agents, register the MCP server in your harness config:
+
+**Google Antigravity 2.0 (`~/.gemini/config/mcp_config.json`)**:
+```json
+{
+  "mcpServers": {
+    "cloud-search": {
+      "command": "cloud-search-lite",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+**Claude Desktop (`~/.config/Claude/claude_desktop_config.json`)**:
+```json
+{
+  "mcpServers": {
+    "cloud-search": {
+      "command": "cloud-search-lite",
+      "args": ["mcp"]
+    }
+  }
+}
 ```
 
 ---
